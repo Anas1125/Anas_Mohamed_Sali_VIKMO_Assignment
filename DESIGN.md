@@ -24,6 +24,7 @@
 ### OrderItem
 - OrderItem links Orders and Products.
 - Unit price is stored separately to preserve historical pricing even if the Product price changes later.
+- line_total is stored to preserve the value calculated at the time of ordering and avoid recalculation issues if prices change later.
 
 ## Relationship Design
 

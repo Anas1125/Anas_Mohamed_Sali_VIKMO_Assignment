@@ -153,3 +153,32 @@ See DESIGN.md for detailed explanations of:
 * Locking strategy
 * Channel synchronization
 * Conflict resolution
+
+# Sync products
+curl.exe -X POST http://127.0.0.1:8000/api/sync/channel/
+
+# Confirm order
+curl.exe -X POST http://127.0.0.1:8000/api/orders/10/confirm/
+
+# Deliver order
+curl.exe -X POST http://127.0.0.1:8000/api/orders/10/deliver/
+
+## Running Tests
+
+The API was manually tested using:
+
+- Django REST Framework Browsable API
+- curl commands
+
+Scenarios tested:
+
+- Successful order flow
+- Insufficient stock validation
+- Invalid status transitions
+- Channel sync idempotency
+
+## Database
+
+Database used: SQLite
+
+Migration files are included in the repository.
