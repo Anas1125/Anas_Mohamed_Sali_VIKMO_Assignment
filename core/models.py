@@ -142,7 +142,20 @@ class OrderItem(models.Model):
         max_digits=12,
         decimal_places=2
     )
+    def save(self, *args, **kwargs):
 
+        self.line_total = (
+            self.quantity * self.unit_price
+        )
+
+        super().save(*args, **kwargs)
+
+        self.order.total_amount = sum(
+            item.line_total
+            for item in self.order.items.all()
+        )
+
+        self.order.save()
 
     def __str__(self):
         return f"{self.product.name} x {self.quantity}"

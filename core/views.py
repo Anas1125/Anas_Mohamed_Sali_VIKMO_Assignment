@@ -18,6 +18,145 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db import transaction
 
+from django.http import HttpResponse
+
+def home(request):
+    return HttpResponse("""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>VIKMO Dashboard</title>
+        <style>
+            body {
+                margin: 0;
+                font-family: 'Segoe UI', sans-serif;
+                background: linear-gradient(135deg, #0f172a, #1e293b);
+                color: white;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 50px;
+            }
+
+            h1 {
+                text-align: center;
+                font-size: 48px;
+                margin-bottom: 10px;
+            }
+
+            .subtitle {
+                text-align: center;
+                color: #cbd5e1;
+                margin-bottom: 50px;
+            }
+
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 20px;
+            }
+
+            .card {
+                background: rgba(255,255,255,0.08);
+                border-radius: 15px;
+                padding: 25px;
+                text-align: center;
+                text-decoration: none;
+                color: white;
+                transition: 0.3s;
+                backdrop-filter: blur(10px);
+            }
+
+            .card:hover {
+                transform: translateY(-8px);
+                background: rgba(255,255,255,0.15);
+            }
+
+            .icon {
+                font-size: 40px;
+                margin-bottom: 10px;
+            }
+
+            .title {
+                font-size: 22px;
+                font-weight: bold;
+            }
+
+            .desc {
+                color: #cbd5e1;
+                margin-top: 8px;
+                font-size: 14px;
+            }
+
+            .footer {
+                text-align: center;
+                margin-top: 50px;
+                color: #94a3b8;
+            }
+        </style>
+    </head>
+    <body>
+
+        <div class="container">
+
+            <h1>🚀 VIKMO Dashboard</h1>
+
+            <p class="subtitle">
+                Sales Order & Inventory Management System
+            </p>
+
+            <div class="grid">
+
+                <a href="/admin/" class="card">
+                    <div class="icon">⚙️</div>
+                    <div class="title">Admin</div>
+                    <div class="desc">Manage system data</div>
+                </a>
+
+                <a href="/api/products/" class="card">
+                    <div class="icon">📦</div>
+                    <div class="title">Products</div>
+                    <div class="desc">View all products</div>
+                </a>
+
+                <a href="/api/inventory/" class="card">
+                    <div class="icon">📊</div>
+                    <div class="title">Inventory</div>
+                    <div class="desc">Track stock levels</div>
+                </a>
+
+                <a href="/api/dealers/" class="card">
+                    <div class="icon">🏪</div>
+                    <div class="title">Dealers</div>
+                    <div class="desc">Manage dealers</div>
+                </a>
+
+                <a href="/api/orders/" class="card">
+                    <div class="icon">🛒</div>
+                    <div class="title">Orders</div>
+                    <div class="desc">Process orders</div>
+                </a>
+
+                <a href="/api/sync/channel/" class="card">
+                    <div class="icon">🔄</div>
+                    <div class="title">Channel Sync</div>
+                    <div class="desc">Sync external products</div>
+                </a>
+
+            </div>
+
+            <div class="footer">
+                Built with Django REST Framework | Anas Mohamed
+            </div>
+
+        </div>
+
+    </body>
+    </html>
+    """)
+
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -49,6 +188,12 @@ class OrderViewSet(viewsets.ModelViewSet):
         with transaction.atomic():
 
             for item in order.items.all():
+
+                print(
+                    f"ORDER={order.id}, "
+                    f"PRODUCT={item.product.id}, "
+                    f"QTY={item.quantity}"
+                )
 
                 inventory = Inventory.objects.select_for_update().get(
                     product=item.product
@@ -126,7 +271,7 @@ class OrderItemViewSet(viewsets.ModelViewSet):
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
 
-@api_view(["GET", "POST"])
+@api_view(["POST"])
 def sync_channel(request):
 
     file_path = Path("channel_feed.json")
