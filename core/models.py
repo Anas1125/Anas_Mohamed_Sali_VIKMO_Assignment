@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import date
 
 class Product(models.Model):
     sku = models.CharField(max_length=50, unique=True)
@@ -59,6 +60,24 @@ class Dealer(models.Model):
     
 class Order(models.Model):
 
+    def save(self, *args, **kwargs):
+
+        if not self.order_number:
+
+            today = date.today().strftime("%Y%m%d")
+
+            last_order = Order.objects.filter(
+                order_number__startswith=f"ORD-{today}"
+            ).count()
+
+            sequence = last_order + 1
+
+            self.order_number = (
+                f"ORD-{today}-{sequence:04d}"
+            )
+
+        super().save(*args, **kwargs)
+
     STATUS_CHOICES = [
         ("DRAFT", "Draft"),
         ("CONFIRMED", "Confirmed"),
@@ -67,7 +86,8 @@ class Order(models.Model):
 
     order_number = models.CharField(
         max_length=50,
-        unique=True
+        unique=True,
+        blank=True
     )
 
     dealer = models.ForeignKey(
@@ -123,5 +143,8 @@ class OrderItem(models.Model):
         decimal_places=2
     )
 
+
     def __str__(self):
         return f"{self.product.name} x {self.quantity}"
+    
+    
