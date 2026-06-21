@@ -140,3 +140,32 @@ Running the same feed multiple times:
 - Produces consistent results
 
 This is achieved using Django's update_or_create() method.
+
+## Indexing Strategy
+
+The Product SKU field is marked as unique. Django automatically creates a database index for unique fields, allowing efficient product lookups and synchronization by SKU.
+
+Primary keys on all models are automatically indexed by Django and are used for joins and relationship lookups.
+
+For larger datasets, additional indexes could be added on:
+
+* Order.order_number for faster order retrieval.
+* Dealer.dealer_code for dealer searches.
+* Product.category for category-based filtering.
+
+The current indexing strategy is sufficient for the expected assignment-scale workload while maintaining simple database design.
+
+## Multi-Tenant Extension
+
+To support multiple dealers or suppliers operating independently, a Tenant model could be introduced.
+
+Each Product, Inventory, Dealer, Order, and OrderItem would be associated with a tenant through a ForeignKey relationship.
+
+Example:
+
+* Tenant A can only access its own products, inventory, and orders.
+* Tenant B is isolated from Tenant A's data.
+
+All API queries would be filtered by the authenticated tenant to ensure data isolation.
+
+For larger deployments, a schema-per-tenant or database-per-tenant approach could also be considered, but a shared database with tenant filtering would be the simplest initial implementation.
