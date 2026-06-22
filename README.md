@@ -94,7 +94,7 @@ pip install -r requirements.txt
 
 ### Run Migrations
 
-python manage.py makemigrations
+python manage.py migrations
 
 python manage.py migrate
 
@@ -182,3 +182,43 @@ Scenarios tested:
 Database used: SQLite
 
 Migration files are included in the repository.
+
+## Example Requests
+
+### Confirm Order
+
+Request:
+
+```bash
+curl.exe -X POST http://127.0.0.1:8000/api/orders/10/confirm/
+```
+
+Response:
+
+```json
+{
+  "message": "Order confirmed successfully"
+}
+```
+
+### Channel Sync
+
+Request:
+
+```bash
+curl.exe -X POST http://127.0.0.1:8000/api/sync/channel/
+```
+
+Response:
+
+```json
+{
+  "created": 0,
+  "updated": 200
+}
+```
+
+## Repository
+
+GitHub Repository:
+https://github.com/Anas1125/Anas_Mohamed_Sali_VIKMO_Assignment
